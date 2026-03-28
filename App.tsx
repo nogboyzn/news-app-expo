@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
-import News from './src/components/News';
-
+import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, Image, Button } from 'react-native';
+import NewsList from './src/components/NewsList';
 import { fetchNewsService, NewsData } from './src/utils/handle-api';
 
 export default function App() {
@@ -31,7 +30,12 @@ export default function App() {
       <StatusBar style="dark" />
       
       <View style={styles.header}>
+        <Image style={styles.banner} source={require('./assets/newspaper-banner.png')} />
         <Text style={styles.headerTitle}>Últimas notícias</Text>
+        <View style={styles.statsContainer}>
+          <Text style={styles.statsText}>Total de notícias: {newsList.length}</Text>
+        </View>
+        <Button title="Atualizar lista" onPress={fetchNews} />
       </View>
 
       {loading ? (
@@ -44,17 +48,7 @@ export default function App() {
           <Text style={styles.errorText}>Erro: {error}</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {newsList.map((item) => (
-            <News
-              key={item.id.toString()}
-              title={item.title}
-              image={item.image}
-              published={item.published}
-              link={item.link}
-            />
-          ))}
-        </ScrollView>
+        <NewsList news={newsList} />
       )}
     </SafeAreaView>
   );
@@ -71,11 +65,27 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     alignItems: 'center',
-    paddingTop: 40, // Ensure header is spaced from exact top
+    paddingTop: 40,
+  },
+  banner: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'cover',
+    marginBottom: 10,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  statsContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  statsText: {
+    fontSize: 16,
+    color: '#333',
   },
   centerContainer: {
     flex: 1,
@@ -90,8 +100,5 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 16,
-  },
-  scrollContent: {
-    padding: 16,
   },
 });
